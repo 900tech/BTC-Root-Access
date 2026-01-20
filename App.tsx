@@ -42,9 +42,9 @@ const App: React.FC = () => {
           const currentPrice = parseFloat(data.c);
 
           if (currentPrice > lastPriceRef.current) {
-            setPriceColor('text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]');
+            setPriceColor('text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]');
           } else if (currentPrice < lastPriceRef.current) {
-            setPriceColor('text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]');
+            setPriceColor('text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]');
           }
 
           setTimeout(() => setPriceColor('text-[#00ff41]'), 300);
@@ -83,15 +83,9 @@ const App: React.FC = () => {
     <div className="relative min-h-[100dvh] w-full flex items-center justify-center p-4 bg-black overflow-hidden select-none">
       <MatrixRain />
 
-      {/* 终端主界面 */}
-      <div className="relative z-10 w-full max-w-5xl bg-black/90 border-2 border-[#008f11] p-4 md:p-8 landscape-compact shadow-[0_0_40px_rgba(0,143,17,0.2)]">
+      {/* 终端主界面 - 修改为完全透明 (bg-transparent)，移除模糊和阴影 */}
+      <div className="relative z-10 w-full max-w-5xl bg-transparent p-4 md:p-8 landscape-compact">
         
-        {/* 四角边框 */}
-        <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#00ff41]"></div>
-        <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-[#00ff41]"></div>
-        <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-[#00ff41]"></div>
-        <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-[#00ff41]"></div>
-
         <div className="flex flex-col h-full">
           <header className="flex justify-between items-start mb-4 landscape-compact">
             <div>
@@ -106,13 +100,13 @@ const App: React.FC = () => {
           </header>
 
           <main className="flex-grow flex flex-col items-center justify-center py-12 md:py-24 landscape-compact">
-            {/* 价格显示 - 仅保留此核心部分 */}
-            <div className={`text-[18vw] md:text-[11rem] font-bold tracking-tighter transition-all duration-200 ${priceColor} landscape-price`}>
+            {/* 价格显示 - 核心视觉中心 */}
+            <div className={`text-[20vw] md:text-[12rem] font-bold tracking-tighter transition-all duration-200 ${priceColor} landscape-price`}>
               {price}
             </div>
           </main>
 
-          <footer className="mt-6 pt-4 border-t border-[#008f11]/20 landscape-compact">
+          <footer className="mt-6 pt-4 landscape-compact">
             <div className="h-16 md:h-24 overflow-hidden text-sm md:text-lg space-y-1 text-[#008f11]">
               {logs.map((log) => (
                 <div key={log.id} className="opacity-80 flex gap-3">
