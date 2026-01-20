@@ -4,11 +4,11 @@ import MatrixRain from './components/MatrixRain';
 import { BinanceTickerData, LogEntry } from './types';
 
 const App: React.FC = () => {
-  const [price, setPrice] = useState<string>('-------');
-  const [change, setChange] = useState<string>('--.--%');
+  const [price, setPrice] = useState<string>('LOADING...');
+  const [change, setChange] = useState<string>('0.00%');
   const [priceColor, setPriceColor] = useState<string>('text-[#00ff41]');
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [status, setStatus] = useState<'CONNECTING' | 'LIVE' | 'OFFLINE'>('CONNECTING');
   
   const lastPriceRef = useRef<number>(0);
   const logCounterRef = useRef<number>(0);
@@ -19,11 +19,13 @@ const App: React.FC = () => {
       message: `> ${message}`,
       timestamp: new Date().toLocaleTimeString(),
     };
-    setLogs(prev => [newLog, ...prev].slice(0, 6));
+    setLogs(prev => [newLog, ...prev].slice(0, 5));
   }, []);
 
   useEffect(() => {
-    addLog("Initializing websocket connection...");
+    addLog("BOOTING_SYSTEM...");
+    addLog("BYPASSING_FIREWALL...");
+    
     const wsUrl = 'wss://stream.binance.com:9443/ws/btcusdt@ticker';
     let ws: WebSocket;
 
@@ -31,8 +33,8 @@ const App: React.FC = () => {
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        addLog("ACCESS GRANTED. Stream encrypted.");
-        addLog("Receiving data packets...");
+        setStatus('LIVE');
+        addLog("ROOT_ACCESS_GRANTED: BTC_FEED");
       };
 
       ws.onmessage = (event) => {
@@ -40,119 +42,112 @@ const App: React.FC = () => {
         const currentPrice = parseFloat(data.c);
         const percentChange = parseFloat(data.P);
 
-        // UI Logic
         if (currentPrice > lastPriceRef.current) {
-          setPriceColor('text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]');
+          setPriceColor('text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]');
         } else if (currentPrice < lastPriceRef.current) {
-          setPriceColor('text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]');
+          setPriceColor('text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.7)]');
         }
 
-        setTimeout(() => setPriceColor('text-[#00ff41]'), 500);
+        setTimeout(() => setPriceColor('text-[#00ff41]'), 300);
 
-        // Glitch effect emulation
-        if (Math.random() > 0.9) {
-          const formatted = currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
-          setPrice(`$${formatted}`);
-        } else {
-          setPrice(`$${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`);
-        }
-
+        setPrice(`$${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
         setChange(`${percentChange > 0 ? '+' : ''}${percentChange.toFixed(2)}%`);
         lastPriceRef.current = currentPrice;
-        document.title = `BTC: $${parseInt(data.c)} // MATRIX`;
-
-        if (Math.random() > 0.98) {
-          addLog(`Node trace: ${data.v.slice(0, 8)} base units`);
+        
+        if (Math.random() > 0.99) {
+          addLog(`PACKET_RECV: ${data.q.slice(0, 6)} USDT_FLOW`);
         }
       };
 
       ws.onclose = () => {
-        addLog("CONNECTION LOST. Re-routing through proxy...");
+        setStatus('OFFLINE');
+        addLog("CRITICAL_ERROR: RETRYING_IN_3S...");
         setTimeout(connect, 3000);
       };
     };
 
     connect();
-    return () => {
-      if (ws) ws.close();
-    };
+    return () => ws?.close();
   }, [addLog]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        addLog(`Fullscreen error: ${err.message}`);
-      });
-      setIsFullscreen(true);
+      document.documentElement.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen();
-      setIsFullscreen(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-4 bg-black overflow-hidden">
+    <div className="relative min-h-[100dvh] w-full flex items-center justify-center p-4 bg-black overflow-hidden font-mono">
       <MatrixRain />
 
-      {/* Main Terminal Container */}
-      <div className="relative z-10 w-full max-w-4xl bg-black/85 border-2 border-[#008f11] backdrop-blur-sm p-6 md:p-10 landscape-compact flex flex-col shadow-[0_0_30px_rgba(0,143,17,0.3)]">
+      {/* Main Terminal */}
+      <div className="relative z-10 w-full max-w-5xl bg-black/90 border-2 border-[#008f11] p-4 md:p-8 landscape-compact shadow-[0_0_50px_rgba(0,143,17,0.2)]">
         
-        {/* Aesthetic Corner Brackets */}
-        <div className="absolute top-[-2px] left-[-2px] w-8 h-8 border-t-4 border-l-4 border-[#00ff41]"></div>
-        <div className="absolute top-[-2px] right-[-2px] w-8 h-8 border-t-4 border-r-4 border-[#00ff41]"></div>
-        <div className="absolute bottom-[-2px] left-[-2px] w-8 h-8 border-b-4 border-l-4 border-[#00ff41]"></div>
-        <div className="absolute bottom-[-2px] right-[-2px] w-8 h-8 border-b-4 border-r-4 border-[#00ff41]"></div>
+        {/* Corner Brackets */}
+        <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#00ff41]"></div>
+        <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-[#00ff41]"></div>
+        <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-[#00ff41]"></div>
+        <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-[#00ff41]"></div>
 
-        <div className="text-center">
-          <header className="mb-4 landscape-compact">
-            <h1 className="text-lg md:text-2xl tracking-[4px] text-[#00ff41] opacity-80 matrix-glow">
-              SYSTEM_OVERRIDE: MONITORING_STREAM <span className="inline-block w-3 h-5 bg-[#00ff41] align-middle cursor-blink ml-1"></span>
-            </h1>
-            <p className="text-sm md:text-base text-[#008f11] mt-2">DETECTING_ASSET: BITCOIN_BTC_USDT</p>
+        <div className="flex flex-col h-full">
+          <header className="flex justify-between items-start mb-6 landscape-compact">
+            <div>
+              <h1 className="text-lg md:text-xl text-[#00ff41] tracking-[0.2em] font-bold">
+                BTC_KERNEL_WATCH <span className="inline-block w-2 h-4 bg-[#00ff41] animate-pulse"></span>
+              </h1>
+              <div className="text-[10px] md:text-xs opacity-60">AUTH_MODE: ROOT // SESSION: {Math.random().toString(16).slice(2, 10).toUpperCase()}</div>
+            </div>
+            <div className={`px-2 py-1 text-[10px] md:text-xs border ${status === 'LIVE' ? 'border-[#00ff41] text-[#00ff41]' : 'border-red-500 text-red-500'} animate-pulse`}>
+              {status}
+            </div>
           </header>
 
-          <main className="my-6 landscape-compact">
-            <div className={`text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tighter transition-all duration-300 ${priceColor} landscape-price`}>
+          <main className="flex-grow flex flex-col items-center justify-center py-4 md:py-10 landscape-compact">
+            <div className={`text-[12vw] md:text-[8rem] font-bold tracking-tighter transition-all duration-200 ${priceColor} landscape-price`}>
               {price}
             </div>
-
-            <div className="flex flex-wrap justify-center gap-8 mt-6 landscape-compact">
-              <div className="flex flex-col items-center">
-                <span className="text-xs md:text-sm text-[#008f11] uppercase tracking-widest">24h_volatility</span>
-                <span className={`text-2xl md:text-4xl font-bold ${change.startsWith('+') ? 'text-[#00ff41]' : 'text-red-500'}`}>
+            
+            <div className="w-full flex justify-around mt-4 landscape-compact">
+              <div className="text-center">
+                <div className="text-[10px] md:text-sm opacity-50 uppercase tracking-widest">Volatility_24h</div>
+                <div className={`text-2xl md:text-4xl font-bold ${change.startsWith('+') ? 'text-[#00ff41]' : 'text-red-500'}`}>
                   {change}
-                </span>
+                </div>
               </div>
-              <div className="hidden sm:flex flex-col items-center">
-                <span className="text-xs md:text-sm text-[#008f11] uppercase tracking-widest">protocol_status</span>
-                <span className="text-2xl md:text-4xl text-[#00ff41]">SECURED</span>
+              <div className="text-center landscape-hidden">
+                <div className="text-[10px] md:text-sm opacity-50 uppercase tracking-widest">Network_Node</div>
+                <div className="text-2xl md:text-4xl text-[#00ff41]">BINANCE_01</div>
               </div>
             </div>
           </main>
 
-          <footer className="mt-8 pt-4 border-t border-dashed border-[#008f11] text-left h-24 md:h-32 overflow-hidden landscape-compact">
-            <div className="space-y-1 font-mono text-[10px] md:text-sm text-[#008f11]">
+          <footer className="mt-6 pt-4 border-t border-[#008f11]/30 landscape-compact">
+            <div className="h-16 md:h-24 overflow-hidden text-[10px] md:text-sm space-y-1">
               {logs.map((log) => (
-                <div key={log.id} className="opacity-90 animate-in fade-in slide-in-from-left duration-300">
-                  {log.message}
+                <div key={log.id} className="opacity-80">
+                  <span className="text-[#008f11]/50">[{log.timestamp}]</span> {log.message}
                 </div>
               ))}
+              <div className="text-[#00ff41] cursor-blink inline-block">&gt; _</div>
             </div>
           </footer>
         </div>
       </div>
 
-      {/* Fullscreen Trigger */}
-      <button 
-        onClick={toggleFullscreen}
-        className="fixed bottom-6 right-6 z-[60] px-4 py-2 border border-[#00ff41] text-[#00ff41] hover:bg-[#00ff41] hover:text-black transition-colors text-xs md:text-sm tracking-widest opacity-40 hover:opacity-100"
-      >
-        [ {isFullscreen ? 'EXIT_FULLSCREEN' : 'TOGGLE_FULLSCREEN'} ]
-      </button>
-
-      {/* Mobile Landscape Overlay Guidance (Optional hint) */}
-      <div className="fixed bottom-6 left-6 z-[60] text-[10px] text-[#008f11] uppercase hidden md:block">
-        Kernel: 5.4.0-matrix-rt-amd64 // User: root@mainframe
+      {/* Control Overlay */}
+      <div className="fixed bottom-4 right-4 z-50 flex gap-2">
+        <button 
+          onClick={toggleFullscreen}
+          className="p-2 border border-[#00ff41]/40 text-[#00ff41]/60 hover:border-[#00ff41] hover:text-[#00ff41] transition-all text-[10px] uppercase tracking-tighter"
+        >
+          [Full_Screen]
+        </button>
+      </div>
+      
+      <div className="fixed bottom-4 left-4 z-50 text-[10px] text-[#008f11]/40 uppercase landscape-hidden">
+        Matrix v4.2.0-stable // Proxy: Hidden
       </div>
     </div>
   );
