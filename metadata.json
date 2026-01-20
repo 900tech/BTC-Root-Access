@@ -1,0 +1,5 @@
+{
+  "name": "BTC Root Access - Matrix Mode",
+  "description": "A high-performance, mobile-optimized Bitcoin price tracker with a retro Matrix/CRT aesthetic, featuring real-time data from Binance WebSocket.",
+  "requestFramePermissions": []
+}
