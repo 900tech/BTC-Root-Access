@@ -5,19 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>BTC_ROOT_ACCESS // MATRIX_MODE</title>
+    <!-- 引入复古 VT323 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* 强制全局使用 VT323 */
+        * {
+            font-family: 'VT323', monospace !important;
+        }
+
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
             background-color: #000;
-            font-family: 'VT323', monospace;
             color: #00ff41;
+            -webkit-font-smoothing: none; /* 保持字体像素感 */
         }
 
-        /* CRT Scanline Effect */
+        /* CRT 扫描线特效 */
         .crt-overlay {
             position: fixed;
             top: 0;
@@ -38,16 +44,13 @@
             pointer-events: none;
         }
 
-        /* Screen Flicker Animation */
+        /* 屏幕闪烁效果 */
         @keyframes flicker {
-            0% { opacity: 0.97; }
+            0% { opacity: 0.98; }
             5% { opacity: 0.95; }
             10% { opacity: 0.9; }
-            15% { opacity: 0.98; }
-            30% { opacity: 0.95; }
-            50% { opacity: 0.97; }
-            80% { opacity: 0.99; }
-            100% { opacity: 0.97; }
+            15% { opacity: 0.99; }
+            100% { opacity: 0.98; }
         }
         .animate-flicker {
             animation: flicker 0.15s infinite;
@@ -61,15 +64,15 @@
             animation: blink 1s step-end infinite;
         }
 
-        /* Landscape specific tweaks */
+        /* 移动端横屏适配：压缩边距，放大价格显示 */
         @media (orientation: landscape) and (max-height: 500px) {
             .landscape-compact {
-                padding: 0.75rem !important;
+                padding: 0.5rem !important;
                 margin-top: 0.25rem !important;
                 margin-bottom: 0.25rem !important;
             }
             .landscape-price {
-                font-size: 15vh !important;
+                font-size: 18vh !important;
                 line-height: 1 !important;
             }
             .landscape-hidden {
@@ -92,7 +95,7 @@
 <body class="animate-flicker">
     <div id="root"></div>
     <div class="crt-overlay"></div>
-    <!-- Explicitly Load the Entry Module -->
-    <script type="module" src="/index.tsx"></script>
+    <!-- Vite 部署入口 -->
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
