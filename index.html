@@ -20,7 +20,7 @@
             overflow: hidden;
             background-color: #000;
             color: #00ff41;
-            -webkit-font-smoothing: none; /* 保持字体像素感 */
+            -webkit-font-smoothing: none;
         }
 
         /* CRT 扫描线特效 */
@@ -67,12 +67,12 @@
         /* 移动端横屏适配：压缩边距，放大价格显示 */
         @media (orientation: landscape) and (max-height: 500px) {
             .landscape-compact {
-                padding: 0.5rem !important;
-                margin-top: 0.25rem !important;
-                margin-bottom: 0.25rem !important;
+                padding: 0.25rem !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
             }
             .landscape-price {
-                font-size: 18vh !important;
+                font-size: 25vh !important;
                 line-height: 1 !important;
             }
             .landscape-hidden {
@@ -95,7 +95,6 @@
 <body class="animate-flicker">
     <div id="root"></div>
     <div class="crt-overlay"></div>
-    <!-- Vite 部署入口 -->
     <script type="module" src="index.tsx"></script>
 </body>
 </html>

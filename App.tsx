@@ -83,7 +83,7 @@ const App: React.FC = () => {
     <div className="relative min-h-[100dvh] w-full flex items-center justify-center p-4 bg-black overflow-hidden select-none">
       <MatrixRain />
 
-      {/* 终端主界面 - 修改为完全透明 (bg-transparent)，移除模糊和阴影 */}
+      {/* 终端主界面 - 完全透明无背景，直接在代码雨上显示 */}
       <div className="relative z-10 w-full max-w-5xl bg-transparent p-4 md:p-8 landscape-compact">
         
         <div className="flex flex-col h-full">
@@ -99,14 +99,14 @@ const App: React.FC = () => {
             </div>
           </header>
 
-          <main className="flex-grow flex flex-col items-center justify-center py-12 md:py-24 landscape-compact">
+          <main className="flex-grow flex flex-col items-center justify-center py-8 md:py-24 landscape:py-2 landscape-compact">
             {/* 价格显示 - 核心视觉中心 */}
             <div className={`text-[20vw] md:text-[12rem] font-bold tracking-tighter transition-all duration-200 ${priceColor} landscape-price`}>
               {price}
             </div>
           </main>
 
-          <footer className="mt-6 pt-4 landscape-compact">
+          <footer className="mt-6 pt-4 landscape-compact landscape:mt-2">
             <div className="h-16 md:h-24 overflow-hidden text-sm md:text-lg space-y-1 text-[#008f11]">
               {logs.map((log) => (
                 <div key={log.id} className="opacity-80 flex gap-3">
@@ -120,13 +120,26 @@ const App: React.FC = () => {
         </div>
       </div>
 
+      {/* 底部居中关注链接 - 风格统一 */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1">
+        <a 
+          href="https://x.com/intent/follow?screen_name=Crypto58_" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#00ff41] opacity-60 hover:opacity-100 transition-opacity text-sm md:text-lg tracking-[0.4em] uppercase font-bold"
+        >
+          @CRYPTO58_
+        </a>
+        <div className="w-12 h-[1px] bg-[#00ff41]/30"></div>
+      </div>
+
       {/* 工具栏 */}
-      <div className="fixed bottom-4 right-4 z-50 flex gap-2">
+      <div className="fixed bottom-4 right-4 z-50 flex gap-2 landscape-hidden">
         <button 
           onClick={toggleFullscreen}
           className="px-4 py-1 border border-[#00ff41]/30 text-[#00ff41]/50 hover:border-[#00ff41] hover:text-[#00ff41] transition-all text-xs uppercase bg-black/50 backdrop-blur-sm"
         >
-          [FULL_SCREEN_MODE]
+          [FULL_SCREEN]
         </button>
       </div>
       
